@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>你在亲密关系中是哪种相处模式？</title>
+  <style>
+    :root {
+      --ink: #23302b;
+      --muted: #71807a;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --line: #e6ebe5;
+      --accent: #5f8174;
+      --accent-dark: #3d6256;
+      --accent-soft: #e6f0eb;
+      --warm: #c77e5e;
+      --warm-soft: #fff0e9;
+      --shadow: 0 18px 50px rgba(44, 62, 53, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+    }
+    button { font: inherit; }
+    .shell { width: min(100% - 32px, 960px); margin: 0 auto; }
+    .topbar {
+      border-bottom: 1px solid rgba(95, 129, 116, .16);
+      background: rgba(251, 250, 246, .9);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(12px);
+    }
+    .topbar-inner { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { color: var(--accent-dark); font-weight: 700; letter-spacing: .04em; }
+    .topnote { color: var(--muted); font-size: 13px; }
+    main { padding: 48px 0 72px; }
+    .intro { max-width: 740px; margin: 0 auto 28px; }
+    .eyebrow { color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 10px 0 12px; font-size: clamp(30px, 5vw, 50px); line-height: 1.15; letter-spacing: .01em; }
+    h2 { margin: 0 0 10px; font-size: 25px; line-height: 1.3; }
+    h3 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+    p { margin: 0 0 12px; }
+    .lede { color: #53625c; font-size: 17px; max-width: 690px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 8px; }
+    .start-card { padding: clamp(24px, 5vw, 42px); }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0; }
+    .meta { padding: 8px 12px; background: #f2f6f2; border-radius: 999px; color: #4a665b; font-size: 13px; }
+    .notice { background: #f7f8f4; border-left: 3px solid var(--accent); padding: 14px 16px; color: #56645f; font-size: 14px; margin: 22px 0; }
+    .button-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn { border: 1px solid transparent; border-radius: 6px; padding: 11px 18px; cursor: pointer; transition: .18s ease; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-secondary { background: white; border-color: var(--line); color: var(--ink); }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent-dark); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+    .hidden { display: none !important; }
+    .quiz-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 14px; }
+    #quizView { width: min(100%, 410px); margin: 0 auto; }
+    #quizView .quiz-head h2 { font-size: 22px; }
+    .progress-copy { color: var(--muted); font-size: 14px; }
+    .progress-track { height: 7px; background: #e8ede8; border-radius: 99px; overflow: hidden; margin-bottom: 24px; }
+    .progress-fill { height: 100%; background: var(--accent); border-radius: inherit; transition: width .25s ease; }
+    .question-card { padding: clamp(24px, 5vw, 42px); }
+    .question-number { color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 16px; }
+    .question-text { font-size: clamp(20px, 3vw, 27px); line-height: 1.45; margin-bottom: 28px; }
+    .options { display: grid; gap: 10px; }
+    .option { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: #fff; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 13px 15px; cursor: pointer; }
+    .option:hover { border-color: var(--accent); background: #fbfdfb; }
+    .option.selected { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); box-shadow: 0 0 0 2px rgba(95,129,116,.08); }
+    .option-dot { flex: 0 0 25px; width: 25px; height: 25px; border: 1px solid #b8c7be; border-radius: 50%; display: grid; place-items: center; font-size: 12px; color: var(--muted); }
+    .selected .option-dot { background: var(--accent); border-color: var(--accent); color: white; }
+    .option-label { font-size: 15px; }
+    .quiz-actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .quiz-actions .right { display: flex; gap: 10px; }
+    .result-hero { padding: clamp(24px, 5vw, 42px); background: linear-gradient(135deg, #f0f6f0, #fff); border-bottom: 1px solid var(--line); }
+    .result-type { color: var(--accent-dark); font-size: clamp(30px, 6vw, 48px); line-height: 1.15; margin: 8px 0; }
+    .result-subtitle { color: var(--warm); font-size: 19px; font-weight: 600; }
+    .result-body { padding: clamp(24px, 5vw, 42px); }
+    .result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 20px 0 28px; }
+    .score-card { border: 1px solid var(--line); border-radius: 6px; padding: 15px; background: #fff; }
+    .score-top { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; }
+    .score-value { color: var(--accent-dark); font-weight: 700; }
+    .score-track { background: #edf1ed; height: 8px; border-radius: 99px; overflow: hidden; margin-top: 9px; }
+    .score-bar { height: 100%; background: var(--accent); border-radius: inherit; }
+    .result-section { border-top: 1px solid var(--line); padding: 22px 0; }
+    .result-section:first-of-type { border-top: 0; padding-top: 0; }
+    .risk-box { background: var(--warm-soft); border: 1px solid #f4d5c7; border-radius: 6px; padding: 17px; margin: 16px 0; }
+    .risk-box.safe { background: #f3f8f2; border-color: #d8e8d4; }
+    .risk-title { color: #a14f35; font-weight: 700; }
+    .safe .risk-title { color: #4f7654; }
+    .radar-layout { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(210px, .65fr); gap: 18px; align-items: center; margin: 22px 0 28px; }
+    .radar-card { border: 1px solid var(--line); border-radius: 6px; background: #fcfdfb; padding: 8px; }
+    .radar-svg { display: block; width: 100%; height: auto; }
+    .radar-legend { display: grid; gap: 10px; }
+    .radar-legend-item { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; font-size: 13px; }
+    .radar-legend-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+    .radar-legend-value { color: var(--accent-dark); font-weight: 700; }
+    .advice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .advice-card { border: 1px solid var(--line); border-radius: 6px; padding: 17px; background: #fff; }
+    .advice-kicker { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; margin-bottom: 5px; }
+    .advice-card h3 { color: var(--accent-dark); }
+    .advice-card p { color: #53625c; font-size: 14px; }
+    .practice-box { margin-top: 18px; padding: 18px; border: 1px solid #dfe9e1; border-radius: 6px; background: #f5faf5; }
+    .practice-box strong { color: var(--accent-dark); }
+    .reference-note { margin-top: 18px; padding: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    .small { color: var(--muted); font-size: 13px; }
+    .result-actions { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .footer-note { color: var(--muted); font-size: 13px; margin-top: 22px; }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 22px, 960px); }
+      main { padding: 28px 0 48px; }
+      .topbar-inner { min-height: 58px; }
+      .topnote { display: none; }
+      .quiz-head { align-items: start; flex-direction: column; gap: 3px; }
+      .result-grid { grid-template-columns: 1fr; }
+      .radar-layout, .advice-grid { grid-template-columns: 1fr; }
+      .quiz-actions { align-items: stretch; }
+      .quiz-actions .right { flex: 1; }
+      .quiz-actions .right .btn { flex: 1; }
+      .quiz-actions > .btn { padding-left: 12px; padding-right: 12px; }
+    }
+    @media print {
+      .topbar, .result-actions { display: none !important; }
+      body { background: white; }
+      .panel { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">关系自我探索</div>
+      <div class="topnote">50题｜约8—10分钟</div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section id="startView">
+      <div class="intro">
+        <div class="eyebrow">RELATIONSHIP CHECK-IN</div>
+        <h1>你在亲密关系中是哪种相处模式？</h1>
+        <p class="lede">从情绪安全、沟通、边界、投入、信任与修复六个维度，梳理你当前这段关系的互动状态。</p>
+      </div>
+      <div class="panel start-card">
+        <div class="meta-row">
+          <span class="meta">50道题</span>
+          <span class="meta">6个核心维度</span>
+          <span class="meta">含风险信号提醒</span>
+        </div>
+        <h2>开始前请先确认</h2>
+        <p>请以当前最主要的一段亲密关系为对象，并根据过去三个月的实际情况作答。答案没有对错，请尽量依据真实行为，而不是理想状态回答。</p>
+        <div class="notice">本测试用于自我探索与关系沟通参考，不构成心理诊断、医疗建议、法律意见或心理咨询。结果不能单独替代你对重大关系决定的判断。</div>
+        <div class="button-row">
+          <button class="btn btn-primary" id="startBtn">开始测试</button>
+          <button class="btn btn-secondary hidden" id="continueBtn">继续上次作答</button>
+          <button class="btn btn-secondary hidden" id="clearBtn">清除记录</button>
+        </div>
+        <p class="footer-note">如果关系中存在正在发生的人身威胁、暴力、跟踪、性胁迫或限制自由，请优先联系可信任的人和当地紧急服务。</p>
+      </div>
+    </section>
+
+    <section id="quizView" class="hidden">
+      <div class="quiz-head">
+        <div>
+          <div class="eyebrow">CURRENT RELATIONSHIP</div>
+          <h2>按真实经历选择最接近的答案</h2>
+        </div>
+        <div class="progress-copy" id="progressCopy">第1题，共50题</div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width: 2%"></div></div>
+      <div class="panel question-card">
+        <div class="question-number" id="questionNumber">QUESTION 01</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="options" id="options"></div>
+        <div class="quiz-actions">
+          <button class="btn btn-secondary" id="prevBtn">上一题</button>
+          <div class="right">
+            <button class="btn btn-secondary" id="exitBtn">暂存并退出</button>
+            <button class="btn btn-primary" id="nextBtn">下一题</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="resultView" class="hidden">
+      <div class="panel">
+        <div class="result-hero">
+          <div class="eyebrow">YOUR RELATIONSHIP PATTERN</div>
+          <div class="result-type" id="resultType"></div>
+          <div class="result-subtitle" id="resultSubtitle"></div>
+          <p id="resultIntro" style="margin-top:16px;max-width:700px"></p>
+        </div>
+        <div class="result-body">
+          <div class="result-section">
+            <h2>六个维度</h2>
+            <p class="small">分数越高，代表当前关系在该维度上的表现越稳定。它是本测试内部的参考区间，不是临床标准。</p>
+            <div class="result-grid" id="scoreGrid"></div>
+            <div class="radar-layout">
+              <div class="radar-card" aria-label="六个关系维度雷达图">
+                <div id="radarChart"></div>
+              </div>
+              <div class="radar-legend" id="radarLegend"></div>
+            </div>
+          </div>
+          <div class="result-section">
+            <h2>结果解读</h2>
+            <div id="resultDetails"></div>
+          </div>
+          <div class="result-section">
+            <h2>风险信号</h2>
+            <div id="riskDetails"></div>
+          </div>
+          <div class="result-section">
+            <h2>给你的建议</h2>
+            <div id="resultAdvice"></div>
+            <div class="advice-grid" id="personalizedAdvice"></div>
+            <div class="practice-box" id="practiceBox"></div>
+            <div class="reference-note" id="referenceNote"></div>
+          </div>
+          <div class="result-actions">
+            <button class="btn btn-primary" id="printBtn">打印或保存结果</button>
+            <button class="btn btn-secondary" id="restartBtn">重新测试</button>
+          </div>
+          <p class="footer-note">本页面为体验版。正式商品建议补充专业审阅、预测试和自动计分文件，并继续使用“自我探索测试”的表述。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      ["当我不开心时，我可以直接告诉对方发生了什么。", "core", "A"],
+      ["即使不同意我的看法，对方也不会侮辱、嘲笑或贬低我。", "core", "A"],
+      ["我提出一个需求后，对方会先回应事情本身，而不是先质疑我为什么这样想。", "core", "A"],
+      ["我说话时，对方通常会让我把主要内容说完。", "core", "A"],
+      ["我犯错时，讨论会围绕具体行为，而不是否定我的人格。", "core", "A"],
+      ["我会先猜测对方的情绪，再决定自己能不能说实话。", "core", "A", true],
+      ["我和对方相处时，大多数时候不需要小心翼翼地避免触发对方。", "core", "A"],
+      ["我们通常会选择双方都能听进去的时候讨论重要问题。", "core", "B"],
+      ["争吵时，我们讨论具体事件，不用“你总是”“你从来”给对方下结论。", "core", "B"],
+      ["沟通结束前，我们通常能说清楚各自希望对方做什么。", "core", "B"],
+      ["如果一方需要暂停，我们会约定恢复沟通的大致时间。", "core", "B"],
+      ["讨论问题时，双方都会说明自己的理由，也会听对方的理由。", "core", "B"],
+      ["问题没有解决时，我们常常靠装作没事来结束争执。", "core", "B", true],
+      ["我表达不同意见后，对方常用“你太敏感”“你想太多”来结束话题。", "core", "B", true],
+      ["我说“不”时，对方能接受，不会用冷落、威胁或羞辱逼我改变。", "core", "C"],
+      ["对方进入我的私人空间前，通常会先征得我的同意。", "core", "C"],
+      ["我可以和朋友、家人联系，不需要因为伴侣不高兴而减少这些关系。", "core", "C"],
+      ["涉及双方时间、金钱或生活安排的决定，对方会先征求我的意见。", "core", "C"],
+      ["我可以拥有与对方不同的兴趣、习惯或观点。", "core", "C"],
+      ["我需要频繁报告行踪或证明忠诚，才能避免对方不高兴。", "core", "C", true],
+      ["为了避免发生矛盾，我经常取消自己的计划、兴趣或社交安排。", "core", "C", true],
+      ["联系、约会计划和日常照顾通常由双方共同发起。", "core", "D"],
+      ["我提出具体需求后，对方会认真回应，即使不能满足也会说明原因。", "core", "D"],
+      ["对方答应的事情通常会按约定完成，做不到时会提前说明。", "core", "D"],
+      ["我遇到困难时，对方会主动询问我需要什么帮助。", "core", "D"],
+      ["涉及双方的重要决定，我们会在决定前交换意见。", "core", "D"],
+      ["如果我不反复提醒，对方通常不会主动处理关系中的问题。", "core", "D", true],
+      ["最近三个月，维持这段关系的大部分工作都是我在做。", "core", "D", true],
+      ["对方说过的话和实际做法通常一致。", "core", "E"],
+      ["我们已经谈过彼此对忠诚、联系和未来安排的基本期待。", "core", "E"],
+      ["出现误会时，我们会直接询问和解释，而不是长时间猜测。", "core", "E"],
+      ["即使对方暂时没有回复，我也不需要通过查手机或反复试探来获得确定感。", "core", "E"],
+      ["涉及关系的重要变化，对方通常会主动告诉我。", "core", "E"],
+      ["对方有时热情、有时突然冷淡，让我很难判断关系处于什么状态。", "core", "E", true],
+      ["我会故意不回复、设置问题或制造场景，来测试对方是否在乎我。", "core", "E", true],
+      ["发生冲突后，双方都能说出自己需要改进的具体地方。", "core", "F"],
+      ["对方道歉后，通常会在之后的行为中体现出改变。", "core", "F"],
+      ["同一个问题再次出现时，我们会检查上次的约定是否执行，并重新调整。", "core", "F"],
+      ["我提出具体反馈后，对方愿意讨论，而不是用分手、冷落或攻击来让我闭嘴。", "core", "F"],
+      ["我们可以谈论未来的时间安排、责任分工或关系期待。", "core", "F"],
+      ["即使在亲密关系中，我仍能继续工作、学习、休息和发展自己的兴趣。", "core", "F"],
+      ["过去的错误会被用于理解问题，而不是每次争吵都拿出来压制我。", "core", "F"],
+      ["伴侣未经同意查看我的手机、聊天记录、定位或账号。", "risk"],
+      ["伴侣曾用威胁分手、曝光隐私、伤害自己或伤害他人等方式，迫使我答应某件事。", "risk"],
+      ["伴侣要求我减少或断绝与家人、朋友的联系，或者持续贬低他们。", "risk"],
+      ["我明确拒绝后，伴侣仍持续要求亲密接触或性行为。", "risk"],
+      ["伴侣未经协商控制我的钱、工作、学习、住处或重要证件。", "risk"],
+      ["伴侣辱骂、羞辱、嘲讽我，或故意在别人面前让我难堪。", "risk"],
+      ["我会因为害怕伴侣的反应，而改变原本想做的事或不敢说实话。", "risk"],
+      ["争吵时出现推搡、摔东西、堵门、跟踪或人身威胁。", "risk"]
+    ];
+
+    const dimensions = {
+      A: { name: "相处安心感", ids: [0,1,2,3,4,5,6] },
+      B: { name: "遇到问题能说开", ids: [7,8,9,10,11,12,13] },
+      C: { name: "做自己和有空间", ids: [14,15,16,17,18,19,20] },
+      D: { name: "彼此都在付出", ids: [21,22,23,24,25,26,27] },
+      E: { name: "信任和稳定", ids: [28,29,30,31,32,33,34] },
+      F: { name: "吵完能修复", ids: [35,36,37,38,39,40,41] }
+    };
+    const reverse = new Set([5, 12, 13, 19, 20, 26, 27, 33, 34]);
+    const coreOptions = ["完全不符合", "不太符合", "说不清 / 一半符合", "比较符合", "非常符合"];
+    const riskOptions = ["从未发生", "偶尔发生", "有时发生", "经常发生", "几乎总是发生"];
+    const labels = ["A", "B", "C", "D", "E"];
+    let answers = Array(50).fill(null);
+    let current = 0;
+    let autoAdvanceTimer = null;
+
+    const $ = (id) => document.getElementById(id);
+    const startView = $("startView");
+    const quizView = $("quizView");
+    const resultView = $("resultView");
+
+    function save() {
+      localStorage.setItem("relationshipTestAnswers", JSON.stringify(answers));
+      localStorage.setItem("relationshipTestCurrent", String(current));
+    }
+
+    function clearSaved() {
+      localStorage.removeItem("relationshipTestAnswers");
+      localStorage.removeItem("relationshipTestCurrent");
+      answers = Array(50).fill(null);
+      current = 0;
+      updateStartButtons();
+    }
+
+    function updateStartButtons() {
+      const saved = localStorage.getItem("relationshipTestAnswers");
+      const hasAny = saved && JSON.parse(saved).some(v => v !== null);
+      $("continueBtn").classList.toggle("hidden", !hasAny);
+      $("clearBtn").classList.toggle("hidden", !hasAny);
+    }
+
+    function begin(mode) {
+      if (mode === "continue") {
+        answers = JSON.parse(localStorage.getItem("relationshipTestAnswers")) || Array(50).fill(null);
+        current = Number(localStorage.getItem("relationshipTestCurrent")) || 0;
+      } else {
+        answers = Array(50).fill(null);
+        current = 0;
+        save();
+      }
+      startView.classList.add("hidden");
+      resultView.classList.add("hidden");
+      quizView.classList.remove("hidden");
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderQuestion() {
+      const q = questions[current];
+      const isRisk = q[1] === "risk";
+      const opts = isRisk ? riskOptions : coreOptions;
+      $("questionNumber").textContent = `QUESTION ${String(current + 1).padStart(2, "0")}`;
+      $("questionText").textContent = q[0];
+      $("progressCopy").textContent = `第${current + 1}题，共50题`;
+      $("progressFill").style.width = `${((current + 1) / 50) * 100}%`;
+      $("prevBtn").disabled = current === 0;
+      $("nextBtn").textContent = current === 49 ? "查看结果" : "下一题";
+      const wrap = $("options");
+      wrap.innerHTML = "";
+      opts.forEach((label, index) => {
+        const button = document.createElement("button");
+        button.className = "option" + (answers[current] === index + (isRisk ? 0 : 1) ? " selected" : "");
+        button.type = "button";
+        button.innerHTML = `<span class="option-dot">${isRisk ? index : index + 1}</span><span class="option-label">${label}</span>`;
+        button.addEventListener("click", () => {
+          answers[current] = index + (isRisk ? 0 : 1);
+          save();
+          renderQuestion();
+          clearTimeout(autoAdvanceTimer);
+          autoAdvanceTimer = setTimeout(() => {
+            autoAdvanceTimer = null;
+            nextQuestion();
+          }, 220);
+        });
+        wrap.appendChild(button);
+      });
+    }
+
+    function nextQuestion() {
+      if (answers[current] === null) {
+        alert("请先选择一个答案。");
+        return;
+      }
+      if (current === 49) {
+        showResults();
+      } else {
+        current += 1;
+        save();
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+
+    function scoreCore() {
+      const scores = {};
+      Object.entries(dimensions).forEach(([key, dim]) => {
+        const values = dim.ids.map(i => reverse.has(i) ? 6 - answers[i] : answers[i]);
+        scores[key] = values.reduce((a, b) => a + b, 0) / values.length;
+      });
+      return scores;
+    }
+
+    function classify(scores, riskTotal) {
+      const entries = Object.entries(scores).sort((a, b) => a[1] - b[1]);
+      const lowCount = Object.values(scores).filter(v => v < 3.4).length;
+      const hasSensitiveRisk = answers[45] > 0 || answers[49] > 0;
+      if (riskTotal >= 8 || hasSensitiveRisk) return "risk";
+      if (Object.values(scores).every(v => v >= 4.2)) return "stable";
+      if (lowCount >= 3 || Object.values(scores).reduce((a,b) => a+b, 0) / 6 < 3.4) return "multi";
+      if (entries[0][0] === "C") return "boundary";
+      if (entries[0][0] === "B" || entries[0][0] === "F") return "conflict";
+      if (entries[0][0] === "A" || entries[0][0] === "E") return "needs";
+      return "multi";
+    }
+
+    const resultInfo = {
+      stable: {
+        type: "稳定共建型", subtitle: "能靠近，也能保留自己",
+        intro: "你当前的关系互动整体较稳定。你们可能仍有分歧，但通常能够表达需求、协商边界，并在冲突后重新建立连接。",
+        detail: "你更容易把问题当作双方共同面对的事情，而不是用输赢判断关系。关系中的亲密感和个人空间目前有一定平衡。",
+        advice: "继续保留定期沟通的习惯，主动谈清联系频率、个人空间、责任分工和未来安排。健康关系也需要持续维护。"
+      },
+      needs: {
+        type: "需求拉扯型", subtitle: "一个想确认，一个在退缩",
+        intro: "你可能经常在亲密和不确定之间来回摆动。你在意这段关系，也希望得到更明确的回应，但双方的表达节奏可能并不一致。",
+        detail: "关系中可能出现追问、解释、暂时冷淡和再次确认的循环。问题不一定来自谁“太敏感”，而是双方对联系、承诺和回应的期待还没有被清楚说出来。",
+        advice: "把“你到底爱不爱我”改成具体需求，例如联系频率、冲突后何时沟通、对未来有什么安排，再观察对方是否愿意持续回应。"
+      },
+      conflict: {
+        type: "冲突消耗型", subtitle: "问题总在重复，修复很少发生",
+        intro: "你们的主要压力可能来自冲突处理和修复方式。矛盾并不一定意味着关系失败，但反复发生、缺少实际改变，会逐渐消耗双方。",
+        detail: "常见循环是：触发事件出现，一方追问或指责，另一方防御或回避，问题暂时停止，之后再次出现。争论次数不是唯一问题，冲突之后有没有改变更重要。",
+        advice: "每次只讨论一个具体问题，避免同时翻出所有旧账。需要暂停时约定恢复沟通的时间，并把道歉转化为可观察的行动。"
+      },
+      boundary: {
+        type: "边界失衡型", subtitle: "为了关系，越来越不像自己",
+        intro: "你可能正在用持续让步来维持关系稳定。体谅对方是关系的一部分，但如果你必须不断压缩自己的空间才能避免冲突，边界就需要重新讨论。",
+        detail: "你的朋友、兴趣、时间或表达空间可能已经受到影响。真正的边界不是用来惩罚对方，而是让双方知道哪些事情需要协商、哪些决定属于个人。",
+        advice: "先明确三条不能被反复突破的个人边界，例如私人通讯、个人时间和社交联系。表达一个具体而小的拒绝，再观察对方是否愿意协商。"
+      },
+      multi: {
+        type: "多维失衡型", subtitle: "不是一次争吵，而是长期疲惫",
+        intro: "你的结果显示，关系中的压力可能同时分布在多个维度。你感到累，往往不只是因为某一次争吵，而是长期缺少稳定的回应、投入或修复。",
+        detail: "当多个维度都偏低时，仅靠一个人主动解释、妥协和修复通常很难改变整体状态。先找出最影响安全感的一个问题，比一次解决所有问题更实际。",
+        advice: "选择一个最重要的问题进行明确沟通，提出可观察的改变标准，并在一段时间后看实际行为是否变化。不要把全部修复责任都放在自己身上。"
+      },
+      risk: {
+        type: "高压警戒型", subtitle: "关系中的安全感需要优先处理",
+        intro: "风险题中出现了需要认真对待的行为信号。它们不等同于对伴侣作出医学或法律定性，但说明你需要优先关注自己的安全、边界和外部支持。",
+        detail: "涉及未经同意查看隐私、限制社交、威胁、性压力、经济控制、跟踪、摔东西或人身威胁的情况，不适合只当作普通沟通问题处理。",
+        advice: "请优先联系可信任的家人、朋友、专业咨询机构或当地紧急服务。若存在正在发生的人身危险，请先离开危险现场并寻求紧急帮助。"
+      }
+    };
+
+    const richInterpretations = {
+      stable: [
+        { title: "你现在的关系底色", text: "稳定并不意味着没有争吵，而是双方在分歧之后仍然能够回到问题本身。你目前的回答显示，亲密感、个人空间和相互尊重之间有较好的平衡。你可以依赖对方，也没有完全放弃自己的判断、朋友和生活节奏。" },
+        { title: "可以继续巩固的能力", text: "把重要话题放在情绪较平稳的时候谈，往往比等到失望积累后再爆发更有效。你们可以定期聊一次联系频率、家务和金钱分工、独处时间，以及未来安排。这样做不是给关系增加考核，而是让默契有机会被说清楚。" },
+        { title: "给你的提醒", text: "有些关系在稳定之后容易把沟通变成默认设置，直到某一方突然感到被忽略。继续保留表达感谢、提出小请求和及时修复的习惯，能让安全感来自持续的行为，而不只是来自过去的相处记录。" }
+      ],
+      needs: [
+        { title: "你可能正在经历什么", text: "当对方的回应不够明确时，你的注意力可能会迅速转向关系本身：他是不是变了、我是不是不重要、这段关系会不会结束。追问、试探和反复确认，很多时候是在寻找确定感；而另一方可能把这些行为理解成压力，于是选择回避，双方就容易进入越想靠近、越难靠近的循环。" },
+        { title: "把不安拆开看", text: "可以把一次触发分成三栏记录：第一栏写发生过的事实，第二栏写你脑中出现的解释，第三栏写你真正想要的回应。这样能帮助你分辨“对方两小时没回复”和“对方已经不在乎我”之间的差别，也能让你的请求更容易被听见。" },
+        { title: "更有用的表达方式", text: "试着用观察、感受、需要和请求四步表达：先说具体发生了什么，再说这让你有什么感受，接着说明你在意的需要，最后提出一个对方能够回答的请求。例如：“最近我们连续几天只简单联系，我有些不安。我需要更稳定的连接。你愿意和我约定每天睡前留十分钟通话吗？”之后观察对方是否愿意持续回应。" }
+      ],
+      conflict: [
+        { title: "你们的消耗点", text: "你们的问题可能不在于谁更会讲道理，而在于冲突时形成了固定的互动循环：一方追问或提高强度，另一方防御、沉默或离开，前者更加焦虑，后者更加想逃。只处理当次对错，往往不能改变下一次冲突的走向。" },
+        { title: "先让身体回到可沟通状态", text: "人在高度激动时，理解对方和组织语言的能力都会下降。暂停并不等于冷暴力，前提是说清楚暂停的原因、时长和回来的时间。例如：“我现在太激动了，继续说只会伤人。我需要三十分钟，今晚八点我们再继续。”如果没有约定回来的时间，暂停很容易被体验成抛弃。" },
+        { title: "修复要落到行为", text: "有效的修复通常包括三件事：承认对方经历了什么，说明自己承担的部分，提出下一次准备怎样做。道歉之后可以把行动写成很小的约定，例如不在争吵时翻旧账、需要离开时先说明、下次在同一问题出现时先复述对方的重点。持续的小改变比一次情绪高涨的承诺更能恢复信任。" }
+      ],
+      boundary: [
+        { title: "你可能付出了什么", text: "你可能已经很擅长体谅、让步和预判对方的反应，却逐渐减少了自己的计划、朋友、兴趣或真实意见。亲密关系需要靠近，也需要两个相对完整的人。把自我缩小到只剩“怎样让对方不生气”，会让关系表面平静，内心却越来越疲惫。" },
+        { title: "边界不是惩罚", text: "边界说的是你能够决定什么、愿意承担什么，以及当边界被反复突破时你会采取什么行动。它不是用来控制对方，也不是要求对方永远不失望。可以从一个具体场景开始：“我的手机和聊天记录属于我的私人空间，我愿意讨论让你不安的事情，但不会接受未经同意查看。”" },
+        { title: "观察对方的回应", text: "提出边界之后，重点不只是对方当下说了什么，而是之后是否愿意协商和尊重。健康的回应可能包含失望，但仍然允许你保有选择；持续的羞辱、威胁、惩罚或限制，则说明问题已经超出普通磨合的范围。" }
+      ],
+      multi: [
+        { title: "为什么会感觉特别累", text: "当情绪安全、沟通、边界、投入和修复同时偏低时，人很容易把所有问题都归因于自己：是不是我不够好、是不是我要求太多、是不是再忍一忍就会好一点。长期关系质量通常由重复发生的互动决定，不能只靠一次解释或一次道歉扭转。" },
+        { title: "一次只处理一个重点", text: "建议先选出最影响你安全感的一项，写清楚三个内容：具体行为是什么，它给你带来了什么影响，你希望未来看到什么变化。给双方一段可观察的时间，再看行动是否持续。不要把所有问题一次性摊开，也不要把改变关系的责任全部放到自己身上。" },
+        { title: "留意你的身心反应", text: "如果你在见到对方、准备发消息或听到某种语气时，身体会明显紧绷、发麻、失眠或进入警觉，可以先做简单的呼吸、走动和记录，让自己恢复一点选择空间。身体的警报值得被听见，但它本身不能替代对事实的判断；必要时可以找专业人士一起梳理。" }
+      ],
+      risk: [
+        { title: "先看安全，再谈沟通技巧", text: "如果关系中出现控制隐私、限制社交、威胁、性压力、经济控制、跟踪、摔东西或人身威胁，这些行为需要优先被当作安全和边界问题处理。它们不等同于对伴侣作出医学或法律定性，但也不适合只用“我们沟通不好”来解释。" },
+        { title: "不要独自承担处理责任", text: "你可以把发生过的事情、时间和影响记录在安全的位置，并告诉一位可信任的人。若担心对方查看手机或账号，可以选择更安全的设备和联系渠道。涉及正在发生的危险时，优先离开现场，联系当地紧急服务或可提供支持的机构。" },
+        { title: "给自己留出判断空间", text: "你不需要在一次测试之后立刻决定关系的去留。先让自己获得安全、支持和清晰信息，再考虑下一步。任何建议都不应要求你冒险面对对方；如果直接沟通可能增加危险，请把安全计划和外部支持放在前面。" }
+      ]
+    };
+
+    const dimensionAdvice = {
+      A: { name: "相处安心感", cue: "练习把“我是不是太敏感”改成对事实的描述。", step: "记录一次具体事件：发生了什么、你有什么感受、你希望对方如何回应。先在自己心里把感受说清楚，再决定是否沟通。" },
+      B: { name: "遇到问题能说开", cue: "把争论从“谁对谁错”拉回“我们要解决哪一件事”。", step: "下一次冲突只选一个议题，约定暂停方式和恢复沟通时间。沟通时使用“当……发生时，我感到……我需要……你愿意……吗？”的句式。" },
+      C: { name: "做自己和有空间", cue: "把边界写成你能执行的句子，而不是对对方的要求。", step: "选择一个最小边界进行练习，例如私人通讯、独处时间或朋友联系，并提前想好边界被突破时你会采取的行动。" },
+      D: { name: "彼此都在付出", cue: "不要只看对方是否说爱你，也观察关系中的时间、精力和责任是否长期由一方承担。", step: "列出最近一周由谁发起联系、安排约会、处理问题和提供照顾，再和对方讨论一项具体的重新分工。" },
+      E: { name: "信任和稳定", cue: "把“我担心的故事”和“我掌握的证据”分开记录。", step: "遇到不安时先写下事实与解释，再提出一个直接、可回答的问题。持续观察对方的行为是否稳定，不用一次承诺替代长期表现。" },
+      F: { name: "吵完能修复", cue: "判断修复是否有效，要看之后有没有具体改变。", step: "把一次道歉转化成一个小约定，并在两周后回顾：做到了什么、哪里卡住、下一步如何调整。" }
+    };
+
+    const practiceByType = {
+      stable: { title: "本周关系练习：保持连接感", text: "安排一次不处理手机、不急着解决问题的20分钟对话。各自分享一件最近感到被支持的事情、一件希望对方理解的小事，再一起确认下周的时间和边界安排。" },
+      needs: { title: "本周关系练习：事实、解释与需要", text: "每次不安出现时先暂停五分钟，写下“我确定发生的事实”“我脑中出现的解释”“我真正想要的回应”。带着第三栏去提出请求，避免用试探代替表达。" },
+      conflict: { title: "本周关系练习：暂停后回来", text: "和对方约定一个双方都能接受的暂停规则：暂停多久、期间是否发一句确认、最晚什么时候继续。规则只有在双方都能遵守时才有修复作用。" },
+      boundary: { title: "本周关系练习：一个清晰边界", text: "挑选一件你过去常常勉强答应的事情，写出“我愿意做什么、我不愿意做什么、如果继续被突破我会怎么做”。先从小而明确的边界开始。" },
+      multi: { title: "本周关系练习：只推进一个改变", text: "从六个维度中选出最低的一项，和对方共同写下一个可观察、可复盘的小行动。两周内只看这一项，避免把全部疲惫都变成一场没有重点的争论。" },
+      risk: { title: "本周优先事项：建立支持和安全计划", text: "把可信任的人、可去的安全地点、重要证件和紧急联系方式整理在安全的位置。若直接沟通可能带来风险，不要为了完成测试建议而独自面对对方。" }
+    };
+
+    const radarLabels = ["相处安心", "能否说开", "做自己", "彼此付出", "信任稳定", "吵完能修复"];
+
+    function radarPoints(cx, cy, radius, ratio) {
+      return radarLabels.map((label, index) => {
+        const angle = -Math.PI / 2 + index * Math.PI / 3;
+        const x = cx + Math.cos(angle) * radius * ratio;
+        const y = cy + Math.sin(angle) * radius * ratio;
+        return x.toFixed(1) + "," + y.toFixed(1);
+      }).join(" ");
+    }
+
+    function renderRadar(scores) {
+      const chart = $("radarChart");
+      const legend = $("radarLegend");
+      chart.innerHTML = "";
+      legend.innerHTML = "";
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "radar-svg");
+      svg.setAttribute("viewBox", "0 0 420 390");
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", "六个关系维度雷达图");
+      const cx = 210;
+      const cy = 184;
+      const radius = 126;
+      const append = (tag, attrs) => {
+        const node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+        svg.appendChild(node);
+        return node;
+      };
+      [0.25, 0.5, 0.75, 1].forEach((ratio, index) => {
+        append("polygon", {
+          points: radarPoints(cx, cy, radius, ratio),
+          fill: index === 3 ? "none" : "#f5f9f5",
+          stroke: "#cbdad0",
+          "stroke-width": "1"
+        });
+      });
+      radarLabels.forEach((label, index) => {
+        const angle = -Math.PI / 2 + index * Math.PI / 3;
+        const x = cx + Math.cos(angle) * radius;
+        const y = cy + Math.sin(angle) * radius;
+        append("line", { x1: cx, y1: cy, x2: x, y2: y, stroke: "#cbdad0", "stroke-width": "1" });
+        const tx = cx + Math.cos(angle) * (radius + 28);
+        const ty = cy + Math.sin(angle) * (radius + 28) + (index === 0 ? -2 : 4);
+        const anchor = Math.abs(Math.cos(angle)) < 0.2 ? "middle" : (Math.cos(angle) > 0 ? "start" : "end");
+        const text = append("text", { x: tx, y: ty, fill: "#53625c", "font-size": "13", "text-anchor": anchor });
+        text.textContent = label;
+      });
+      const dataValues = ["A", "B", "C", "D", "E", "F"].map(key => scores[key] / 5);
+      append("polygon", {
+        points: dataValues.map((ratio, index) => {
+          const angle = -Math.PI / 2 + index * Math.PI / 3;
+          return (cx + Math.cos(angle) * radius * ratio).toFixed(1) + "," + (cy + Math.sin(angle) * radius * ratio).toFixed(1);
+        }).join(" "),
+        fill: "#b7d9c8",
+        "fill-opacity": ".65",
+        stroke: "#4f7d6a",
+        "stroke-width": "2"
+      });
+      dataValues.forEach((ratio, index) => {
+        const angle = -Math.PI / 2 + index * Math.PI / 3;
+        append("circle", {
+          cx: cx + Math.cos(angle) * radius * ratio,
+          cy: cy + Math.sin(angle) * radius * ratio,
+          r: "4",
+          fill: "#4f7d6a",
+          stroke: "#fff",
+          "stroke-width": "2"
+        });
+      });
+      const center = append("text", { x: cx, y: cy + 5, fill: "#3d6256", "font-size": "13", "text-anchor": "middle", "font-weight": "700" });
+      center.textContent = "关系互动";
+      chart.appendChild(svg);
+      ["A", "B", "C", "D", "E", "F"].forEach((key, index) => {
+        const item = document.createElement("div");
+        item.className = "radar-legend-item";
+        item.innerHTML = '<span class="radar-legend-dot"></span><span>' + radarLabels[index] + '</span><span class="radar-legend-value">' + scores[key].toFixed(2) + '</span>';
+        legend.appendChild(item);
+      });
+    }
+
+    function renderPersonalizedAdvice(scores, type) {
+      const container = $("personalizedAdvice");
+      const priorities = Object.entries(scores).sort((a, b) => a[1] - b[1]).slice(0, 3);
+      container.innerHTML = priorities.map(([key, score]) => {
+        const item = dimensionAdvice[key];
+        return '<article class="advice-card"><div class="advice-kicker">' + item.name + ' · ' + score.toFixed(2) + ' / 5</div><h3>' + item.cue + '</h3><p>' + item.step + '</p></article>';
+      }).join("");
+      const practice = practiceByType[type];
+      $("practiceBox").innerHTML = '<strong>' + practice.title + '</strong><p>' + practice.text + '</p>';
+      $("referenceNote").innerHTML = '<strong>本页内容的理论参考方向：</strong>成人依恋与关系互动、非暴力沟通、亲密与自主的平衡、压力和身体警觉、心理咨询中的自我理解。相关思路参考《亲密关系》《依恋》《非暴力沟通》《亲密关系：通往灵魂的桥梁》《亲密陷阱》《Mating in Captivity》《身体从未忘记》《也许你该找个人聊聊》等书目，并以原创概括呈现，不替代专业诊断或心理咨询。';
+    }
+
+    function showResults() {
+      const scores = scoreCore();
+      const riskTotal = answers.slice(42).reduce((a, b) => a + b, 0);
+      const type = classify(scores, riskTotal);
+      const info = resultInfo[type];
+      $("resultType").textContent = info.type;
+      $("resultSubtitle").textContent = info.subtitle;
+      $("resultIntro").textContent = info.intro;
+      $("resultDetails").innerHTML = `<p>${info.detail}</p>`;
+      $("resultAdvice").innerHTML = `<p>${info.advice}</p>`;
+      $("resultDetails").innerHTML = '<p>' + info.detail + '</p>' + richInterpretations[type].map(item => '<h3>' + item.title + '</h3><p>' + item.text + '</p>').join("");
+      renderRadar(scores);
+      renderPersonalizedAdvice(scores, type);
+      const grid = $("scoreGrid");
+      grid.innerHTML = "";
+      Object.entries(dimensions).forEach(([key, dim]) => {
+        const score = scores[key];
+        const card = document.createElement("div");
+        card.className = "score-card";
+        card.innerHTML = `<div class="score-top"><span>${dim.name}</span><span class="score-value">${score.toFixed(2)} / 5</span></div><div class="score-track"><div class="score-bar" style="width:${score / 5 * 100}%"></div></div>`;
+        grid.appendChild(card);
+      });
+      const risk = $("riskDetails");
+      if (riskTotal === 0) {
+        risk.innerHTML = `<div class="risk-box safe"><div class="risk-title">暂未发现明显的重复性风险信号</div><p>风险题总分为0。仍建议结合具体经历判断，不要只依赖一个总分。</p></div>`;
+      } else if (riskTotal < 8 && answers[45] === 0 && answers[49] === 0) {
+        risk.innerHTML = `<div class="risk-box"><div class="risk-title">出现了一些需要认真观察的信号</div><p>风险题总分为${riskTotal}。建议关注相关行为是否重复发生，以及对方是否愿意尊重你的边界并作出实际改变。</p></div>`;
+      } else {
+        risk.innerHTML = `<div class="risk-box"><div class="risk-title">风险信号需要优先处理</div><p>风险题总分为${riskTotal}。如果你正在经历威胁、跟踪、暴力、性胁迫或限制自由，请优先寻求可信任的人和当地紧急服务帮助。</p></div>`;
+      }
+      localStorage.removeItem("relationshipTestAnswers");
+      localStorage.removeItem("relationshipTestCurrent");
+      quizView.classList.add("hidden");
+      startView.classList.add("hidden");
+      resultView.classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    $("startBtn").addEventListener("click", () => begin("new"));
+    $("continueBtn").addEventListener("click", () => begin("continue"));
+    $("clearBtn").addEventListener("click", () => { if (confirm("确定清除暂存答案吗？")) clearSaved(); });
+    $("prevBtn").addEventListener("click", () => { if (current > 0) { current -= 1; save(); renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); } });
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("exitBtn").addEventListener("click", () => { save(); quizView.classList.add("hidden"); startView.classList.remove("hidden"); updateStartButtons(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    $("printBtn").addEventListener("click", () => window.print());
+    $("restartBtn").addEventListener("click", () => { resultView.classList.add("hidden"); startView.classList.remove("hidden"); updateStartButtons(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+    updateStartButtons();
+  </script>
+</body>
+</html>
